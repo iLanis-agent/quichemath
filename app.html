@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiche Math - app</title>
+<style>
+  :root { --accent:#9a5b23; --ink:#2a2116; --paper:#fbf6ec; --soft:#f4ebda; }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:Georgia, 'Times New Roman', serif; background:var(--paper); color:var(--ink); line-height:1.55; padding:2rem 1.2rem; }
+  main { max-width:660px; margin:0 auto; }
+  h1 { font-size:1.8rem; color:var(--accent); }
+  .boundary { background:#fdeaea; border-left:6px solid #b03030; color:#5c1c1c; border-radius:6px; padding:1rem 1.1rem; margin:1rem 0 1.4rem; }
+  .boundary strong { display:block; margin-bottom:.3rem; }
+  .panel { background:var(--soft); border-left:5px solid var(--accent); border-radius:6px; padding:1rem 1.1rem; margin-bottom:1.1rem; }
+  h2 { font-size:1.1rem; margin-bottom:.6rem; }
+  p.note { font-size:.9rem; margin-bottom:.4rem; }
+  label { display:block; font-size:.9rem; margin:.45rem 0 .1rem; }
+  input { width:100%; padding:.45rem .55rem; font-size:1rem; border:1px solid #cfc2a8; border-radius:6px; background:#fff; color:var(--ink); }
+  .out { margin-top:.7rem; font-size:.98rem; background:#fff; border:1px dashed #cfc2a8; border-radius:6px; padding:.6rem .7rem; min-height:2.4rem; }
+  .out.err { border-color:#b03030; color:#8a1f1f; font-style:normal; }
+  footer { margin-top:1.8rem; font-size:.85rem; color:#6d6550; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Quiche Math</h1>
+  <div class="boundary">
+    <strong>Boundary: illustrative arithmetic only</strong>
+    Labeled kitchen norms - 1 egg to half a cup of dairy, about a fifth of a cup per egg, about 4 cups in a 9-inch dish. Your recipe and your actual dish depth win every tie. This page never judges doneness or food safety; follow your recipe's bake guidance.
+  </div>
+
+  <div class="panel">
+    <h2>The ratio truth</h2>
+    <p class="note">The classic quiche custard is 1 egg to half a cup of dairy.</p>
+    <label for="r-eggs">Eggs</label>
+    <input id="r-eggs" type="number" min="0" step="1" value="4">
+    <label for="r-dairy">Dairy (cups)</label>
+    <input id="r-dairy" type="number" min="0" step="0.25" value="2">
+    <div class="out" id="r-out"></div>
+  </div>
+
+  <div class="panel">
+    <h2>The batch truth</h2>
+    <p class="note">A large egg is about a fifth of a cup.</p>
+    <label for="b-eggs">Eggs</label>
+    <input id="b-eggs" type="number" min="0" step="1" value="4">
+    <label for="b-dairy">Dairy (cups)</label>
+    <input id="b-dairy" type="number" min="0" step="0.25" value="2">
+    <div class="out" id="b-out"></div>
+  </div>
+
+  <div class="panel">
+    <h2>The pan truth</h2>
+    <p class="note">A 9-inch pie dish holds about 4 cups at the same depth; capacity scales with pan area.</p>
+    <label for="p-cups">Custard you have (cups)</label>
+    <input id="p-cups" type="number" min="0" step="0.1" value="2.8">
+    <label for="p-pan">Pan size (inches)</label>
+    <input id="p-pan" type="number" min="0" step="1" value="9">
+    <div class="out" id="p-out"></div>
+  </div>
+
+  <footer>Quiche Math is exact arithmetic over labeled kitchen norms. <a href="index.html">Why it exists</a>.</footer>
+</main>
+<script src="engine.js"></script>
+<script>
+  const num = (id) => Number(document.getElementById(id).value);
+  function show(out, fn) {
+    try {
+      const text = fn();
+      out.textContent = text;
+      out.classList.remove("err");
+    } catch (e) {
+      out.textContent = e.message;
+      out.classList.add("err");
+    }
+  }
+  const rOut = document.getElementById("r-out");
+  const bOut = document.getElementById("b-out");
+  const pOut = document.getElementById("p-out");
+  function recalc() {
+    show(rOut, () => custardTruth(num("r-eggs"), num("r-dairy")));
+    show(bOut, () => batchTruth(num("b-eggs"), num("b-dairy")));
+    show(pOut, () => panTruth(num("p-cups"), num("p-pan")));
+  }
+  document.querySelectorAll("input").forEach((el) => {
+    el.addEventListener("input", recalc);
+    el.addEventListener("change", recalc);
+  });
+  recalc();
+</script>
+</body>
+</html>
